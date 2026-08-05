@@ -1,0 +1,317 @@
+(function () {
+  "use strict";
+
+  // ---- i18n ----
+  const I18N = {
+    en: {
+      brand: "TinyPalette",
+      tagline: "a tiny color companion",
+      tapToCopy: "Tap to copy",
+      hex: "HEX",
+      rgb: "RGB",
+      hsl: "HSL",
+      copyCss: "Copy CSS",
+      recent: "Recent",
+      favorites: "Favorites",
+      copied: "Copied!",
+      cssCopied: "CSS copied!",
+      saved: "Saved to favorites",
+      invalid: "Invalid HEX",
+      empty: "Nothing here yet"
+    },
+    zh_CN: {
+      brand: "TinyPalette",
+      tagline: "小巧的色彩小助手",
+      tapToCopy: "点击复制",
+      hex: "HEX",
+      rgb: "RGB",
+      hsl: "HSL",
+      copyCss: "复制 CSS",
+      recent: "最近使用",
+      favorites: "收藏夹",
+      copied: "已复制！",
+      cssCopied: "已复制 CSS！",
+      saved: "已加入收藏",
+      invalid: "无效 HEX",
+      empty: "暂无记录"
+    }
+  };
+
+  const STORAGE_KEYS = Object.freeze({
+    RECENT: "tp_recent",
+    FAV: "tp_favorites"
+  });
+  const MAX_RECENT = 12;
+
+  // ---- DOM ----
+  const el = {
+    input: document.getElementById("hexInput"),
+    picker: document.getElementById("colorPicker"),
+    preview: document.getElementById("previewCard"),
+    hint: document.getElementById("previewHint"),
+    hash: document.getElementById("hashSign"),
+    hexValue: document.getElementById("hexValue"),
+    rgbValue: document.getElementById("rgbValue"),
+    hslValue: document.getElementById("hslValue"),
+    copyCss: document.getElementById("copyCssBtn"),
+    addFav: document.getElementById("addFavBtn"),
+    recentList: document.getElementById("recentList"),
+    favList: document.getElementById("favList"),
+    toast: document.getElementById("toast")
+  };
+
+  let currentHex = "#FFF7EB";
+  let lang = "en";
+
+  // ---- i18n apply ----
+  function applyI18n() {
+    const t = I18N[lang] || I18N.en;
+    document.querySelectorAll("[data-i18n]").forEach((node) => {
+      const key = node.getAttribute("data-i18n");
+      if (t[key]) node.textContent = t[key];
+    });
+    document.documentElement.lang = lang === "zh_CN" ? "zh-CN" : "en";
+  }
+
+  // ---- color utils ----
+  function normalizeHex(raw) {
+    if (!raw) return null;
+    let h = raw.trim().replace(/^#/, "").toUpperCase();
+    if (/^[0-9A-F]{3}$/.test(h)) {
+      h = h.split("").map((c) => c + c).join("");
+    }
+    if (/^[0-9A-F]{6}$/.test(h)) return "#" + h;
+    return null;
+  }
+
+  function hexToRgb(hex) {
+    const h = hex.replace("#", "");
+    return {
+      r: parseInt(h.slice(0, 2), 16),
+      g: parseInt(h.slice(2, 4), 16),
+      b: parseInt(h.slice(4, 6), 16)
+    };
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        default: h = (r - g) / d + 4;
+      }
+      h /= 6;
+    }
+    return {
+      h: Math.round(h * 360),
+      s: Math.round(s * 100),
+      l: Math.round(l * 100)
+    };
+  }
+
+  // contrast text color for swatches
+  function luminance(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    const a = [r, g, b].map((v) => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+  }
+
+  function t(key) {
+    return (I18N[lang] || I18N.en)[key];
+  }
+
+  // ---- render ----
+  function render(hex) {
+    currentHex = hex;
+    const { r, g, b } = hexToRgb(hex);
+    const hsl = rgbToHsl(r, g, b);
+
+    el.preview.style.backgroundColor = hex;
+    el.hexValue.textContent = hex.toUpperCase();
+    el.rgbValue.textContent = `${r}, ${g}, ${b}`;
+    el.hslValue.textContent = `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
+    el.input.value = hex.replace("#", "").toUpperCase();
+    el.picker.value = hex;
+  }
+
+  // ---- toast ----
+  let toastTimer = null;
+  function showToast(msg) {
+    el.toast.textContent = msg;
+    el.toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1500);
+  }
+
+  // ---- copy ----
+  function copyText(text) {
+    const done = () => showToast(t("copied"));
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+
+  function fallbackCopy(text, done) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function cssString(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    return `background-color: ${hex.toUpperCase()};\n/* rgb(${r}, ${g}, ${b}) */`;
+  }
+
+  // ---- storage ----
+  function getRecent() {
+    return new Promise((res) => {
+      chrome.storage.local.get(STORAGE_KEYS.RECENT, (d) =>
+        res(Array.isArray(d[STORAGE_KEYS.RECENT]) ? d[STORAGE_KEYS.RECENT] : []));
+    });
+  }
+  function getFav() {
+    return new Promise((res) => {
+      chrome.storage.local.get(STORAGE_KEYS.FAV, (d) =>
+        res(Array.isArray(d[STORAGE_KEYS.FAV]) ? d[STORAGE_KEYS.FAV] : []));
+    });
+  }
+  function setRecent(arr) {
+    chrome.storage.local.set({ [STORAGE_KEYS.RECENT]: arr });
+  }
+  function setFav(arr) {
+    chrome.storage.local.set({ [STORAGE_KEYS.FAV]: arr });
+  }
+
+  function pushRecent(hex) {
+    getRecent().then((list) => {
+      const next = [hex, ...list.filter((c) => c !== hex)].slice(0, MAX_RECENT);
+      setRecent(next);
+      renderRecent(next);
+    });
+  }
+
+  function renderRecent(list) {
+    el.recentList.innerHTML = "";
+    if (!list.length) {
+      el.recentList.innerHTML = `<span class="empty-note">${t("empty")}</span>`;
+      return;
+    }
+    list.forEach((hex) => {
+      const sw = makeSwatch(hex, false);
+      el.recentList.appendChild(sw);
+    });
+  }
+
+  function renderFav(list) {
+    el.favList.innerHTML = "";
+    if (!list.length) {
+      el.favList.innerHTML = `<span class="empty-note">${t("empty")}</span>`;
+      return;
+    }
+    list.forEach((hex) => {
+      const sw = makeSwatch(hex, true);
+      el.favList.appendChild(sw);
+    });
+  }
+
+  function makeSwatch(hex, isFav) {
+    const sw = document.createElement("div");
+    sw.className = "swatch";
+    sw.style.backgroundColor = hex;
+    sw.style.borderColor = luminance(hex) > 0.6 ? "rgba(255,255,255,0.9)" : "rgba(74,70,80,0.18)";
+    sw.title = hex;
+    sw.addEventListener("click", () => {
+      const norm = normalizeHex(hex);
+      if (norm) { render(norm); pushRecent(norm); }
+    });
+    if (isFav) {
+      const star = document.createElement("span");
+      star.className = "fav-star";
+      star.textContent = "★";
+      sw.appendChild(star);
+    }
+    return sw;
+  }
+
+  function addToFav() {
+    getFav().then((list) => {
+      if (list.includes(currentHex)) {
+        showToast(t("saved"));
+        return;
+      }
+      const next = [currentHex, ...list];
+      setFav(next);
+      renderFav(next);
+      showToast(t("saved"));
+    });
+  }
+
+  // ---- events ----
+  el.input.addEventListener("input", () => {
+    const norm = normalizeHex(el.input.value);
+    if (norm) {
+      render(norm);
+      pushRecent(norm);
+    }
+  });
+
+  el.picker.addEventListener("input", () => {
+    const norm = normalizeHex(el.picker.value);
+    if (norm) {
+      render(norm);
+      pushRecent(norm);
+    }
+  });
+
+  el.preview.addEventListener("click", () => copyText(currentHex.toUpperCase()));
+
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const type = btn.getAttribute("data-copy");
+      if (type === "hex") copyText(currentHex.toUpperCase());
+      else if (type === "rgb") copyText(el.rgbValue.textContent);
+      else if (type === "hsl") copyText(el.hslValue.textContent);
+    });
+  });
+
+  el.copyCss.addEventListener("click", () => {
+    copyText(cssString(currentHex));
+    showToast(t("cssCopied"));
+  });
+
+  el.addFav.addEventListener("click", addToFav);
+
+  // ---- init ----
+  function init() {
+    let stored = "en";
+    try {
+      stored = localStorage.getItem("tp_lang") || (navigator.language || "en");
+    } catch (e) {}
+    lang = stored.indexOf("zh") === 0 ? "zh_CN" : "en";
+    applyI18n();
+
+    render(currentHex);
+    pushRecent(currentHex);
+    getFav().then(renderFav);
+  }
+
+  init();
+})();

@@ -1,0 +1,4 @@
+.codebuddy/
+*.bak
+*.tmp
+*.vsix

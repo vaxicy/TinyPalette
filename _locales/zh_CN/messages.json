@@ -1,0 +1,18 @@
+{
+  "ext_name": {
+    "message": "TinyPalette 调色盘",
+    "description": "Extension name"
+  },
+  "ext_short_name": {
+    "message": "调色盘",
+    "description": "Short name"
+  },
+  "ext_description": {
+    "message": "小巧可爱的色彩小助手。预览 HEX、转换 RGB/HSL、一键复制色值，还能收藏喜爱的颜色。",
+    "description": "Store listing description"
+  },
+  "action_title": {
+    "message": "TinyPalette - 小巧的色彩小助手",
+    "description": "Toolbar tooltip"
+  }
+}
