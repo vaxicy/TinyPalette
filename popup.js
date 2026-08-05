@@ -11,12 +11,9 @@
       rgb: "RGB",
       hsl: "HSL",
       copyCss: "Copy CSS",
-      recent: "Recent",
       copied: "Copied!",
       cssCopied: "CSS copied!",
       invalid: "Invalid HEX",
-      empty: "Nothing here yet",
-      delRecent: "Remove",
       copyHex: "Copy HEX"
     },
     zh_CN: {
@@ -27,20 +24,16 @@
       rgb: "RGB",
       hsl: "HSL",
       copyCss: "复制 CSS",
-      recent: "最近使用",
       copied: "已复制！",
       cssCopied: "已复制 CSS！",
       invalid: "无效 HEX",
-      empty: "暂无记录",
-      delRecent: "删除",
       copyHex: "复制 HEX"
     }
   };
 
   const STORAGE_KEYS = Object.freeze({
-    RECENT: "tp_recent"
+    LANG: "tp_lang"
   });
-  const MAX_RECENT = 12;
 
   // ---- DOM ----
   const el = {
@@ -51,8 +44,6 @@
     rgbValue: document.getElementById("rgbValue"),
     hslValue: document.getElementById("hslValue"),
     copyCss: document.getElementById("copyCssBtn"),
-    recentList: document.getElementById("recentList"),
-    recentPanel: document.getElementById("recentPanel"),
     toast: document.getElementById("toast")
   };
 
@@ -114,16 +105,6 @@
     };
   }
 
-  // contrast text color for swatches
-  function luminance(hex) {
-    const { r, g, b } = hexToRgb(hex);
-    const a = [r, g, b].map((v) => {
-      v /= 255;
-      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
-  }
-
   function t(key) {
     return (I18N[lang] || I18N.en)[key];
   }
@@ -177,76 +158,11 @@
     return `background-color: ${hex.toUpperCase()};\n/* rgb(${r}, ${g}, ${b}) */`;
   }
 
-  // ---- storage ----
-  function getRecent() {
-    return new Promise((res) => {
-      chrome.storage.local.get(STORAGE_KEYS.RECENT, (d) =>
-        res(Array.isArray(d[STORAGE_KEYS.RECENT]) ? d[STORAGE_KEYS.RECENT] : []));
-    });
-  }
-  function setRecent(arr) {
-    chrome.storage.local.set({ [STORAGE_KEYS.RECENT]: arr });
-  }
-
-  function pushRecent(hex) {
-    getRecent().then((list) => {
-      const next = [hex, ...list.filter((c) => c !== hex)].slice(0, MAX_RECENT);
-      setRecent(next);
-      renderRecent(next);
-    });
-  }
-
-  function renderRecent(list) {
-    el.recentList.innerHTML = "";
-    if (!list.length) {
-      el.recentPanel.hidden = true;
-      return;
-    }
-    el.recentPanel.hidden = false;
-    list.forEach((hex) => {
-      const sw = makeSwatch(hex);
-      el.recentList.appendChild(sw);
-    });
-  }
-
-  function makeSwatch(hex) {
-    const sw = document.createElement("div");
-    sw.className = "swatch";
-    sw.style.backgroundColor = hex;
-    sw.style.borderColor = luminance(hex) > 0.6 ? "rgba(255,255,255,0.9)" : "rgba(74,70,80,0.18)";
-    sw.title = hex;
-    sw.addEventListener("click", () => {
-      const norm = normalizeHex(hex);
-      if (norm) { render(norm); pushRecent(norm); }
-    });
-    const del = document.createElement("button");
-    del.className = "del-btn";
-    del.type = "button";
-    del.textContent = "×";
-    del.setAttribute("aria-label", t("delRecent"));
-    del.title = t("delRecent");
-    del.addEventListener("click", (e) => {
-      e.stopPropagation();
-      removeRecent(hex);
-    });
-    sw.appendChild(del);
-    return sw;
-  }
-
-  function removeRecent(hex) {
-    getRecent().then((list) => {
-      const next = list.filter((c) => c !== hex);
-      setRecent(next);
-      renderRecent(next);
-    });
-  }
-
   // ---- events ----
   el.input.addEventListener("input", () => {
     const norm = normalizeHex(el.input.value);
     if (norm) {
       render(norm);
-      pushRecent(norm);
     }
   });
 
@@ -254,7 +170,6 @@
     const norm = normalizeHex(el.picker.value);
     if (norm) {
       render(norm);
-      pushRecent(norm);
     }
   });
 
@@ -283,7 +198,7 @@
   function init() {
     let stored = "en";
     try {
-      stored = localStorage.getItem("tp_lang") || (navigator.language || "en");
+      stored = localStorage.getItem(STORAGE_KEYS.LANG) || (navigator.language || "en");
     } catch (e) {}
     lang = stored.indexOf("zh") === 0 ? "zh_CN" : "en";
     applyI18n();
@@ -293,8 +208,6 @@
     el.rgbValue.textContent = "--";
     el.hslValue.textContent = "--";
     el.previewDot.style.backgroundColor = "#EFE9ED";
-
-    getRecent().then(renderRecent);
   }
 
   init();
