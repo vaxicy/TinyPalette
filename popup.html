@@ -7,18 +7,13 @@
 </head>
 <body>
   <main class="app">
-    <!-- Header -->
+    <!-- Compact header -->
     <header class="header">
-      <div class="logo" aria-hidden="true">
-        <span class="logo-dot"></span>
-        <span class="logo-dot"></span>
-        <span class="logo-dot"></span>
-      </div>
+      <span class="brand-dot" aria-hidden="true"></span>
       <h1 class="brand" data-i18n="brand">TinyPalette</h1>
-      <p class="tagline" data-i18n="tagline">a tiny color companion</p>
     </header>
 
-    <!-- Input -->
+    <!-- Input row: # + HEX + circular picker + preview dot -->
     <section class="input-row">
       <div class="hash" id="hashSign">#</div>
       <input
@@ -28,78 +23,64 @@
         spellcheck="false"
         autocomplete="off"
         maxlength="6"
-        placeholder="FFF7EB"
+        placeholder="ENTER HEX"
         aria-label="HEX color code"
       />
       <input
         id="colorPicker"
         class="color-picker"
         type="color"
-        value="#FFF7EB"
+        value="#E8A0BF"
         aria-label="Pick a color"
       />
+      <span id="previewDot" class="preview-dot" aria-hidden="true"></span>
     </section>
 
-    <!-- Large preview card -->
-    <section
-      id="previewCard"
-      class="preview-card"
-      style="background-color:#FFF7EB"
-    >
-      <span class="preview-hint" id="previewHint" data-i18n="tapToCopy">Tap to copy</span>
-    </section>
-
-    <!-- Info cards -->
-    <section class="info-grid">
-      <div class="info-card">
-        <div class="info-head">
-          <span class="info-label" data-i18n="hex">HEX</span>
-          <button class="copy-btn" data-copy="hex" aria-label="Copy HEX">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-          </button>
-        </div>
-        <span class="info-value" id="hexValue">#FFF7EB</span>
+    <!-- Info rows -->
+    <section class="info-list">
+      <div class="info-row">
+        <span class="info-label" data-i18n="hex">HEX</span>
+        <span class="info-value" id="hexValue">--</span>
+        <button class="copy-btn" data-copy="hex" aria-label="Copy HEX">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        </button>
       </div>
 
-      <div class="info-card">
-        <div class="info-head">
-          <span class="info-label" data-i18n="rgb">RGB</span>
-          <button class="copy-btn" data-copy="rgb" aria-label="Copy RGB">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-          </button>
-        </div>
-        <span class="info-value" id="rgbValue">255, 247, 235</span>
+      <div class="info-row">
+        <span class="info-label" data-i18n="rgb">RGB</span>
+        <span class="info-value" id="rgbValue">--</span>
+        <button class="copy-btn" data-copy="rgb" aria-label="Copy RGB">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        </button>
       </div>
 
-      <div class="info-card">
-        <div class="info-head">
-          <span class="info-label" data-i18n="hsl">HSL</span>
-          <button class="copy-btn" data-copy="hsl" aria-label="Copy HSL">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-          </button>
-        </div>
-        <span class="info-value" id="hslValue">34°, 100%, 96%</span>
+      <div class="info-row">
+        <span class="info-label" data-i18n="hsl">HSL</span>
+        <span class="info-value" id="hslValue">--</span>
+        <button class="copy-btn" data-copy="hsl" aria-label="Copy HSL">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        </button>
       </div>
     </section>
 
     <!-- Copy CSS -->
     <button id="copyCssBtn" class="css-btn">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="9" y="2" width="6" height="4" rx="1"/></svg>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="9" y="2" width="6" height="4" rx="1"/></svg>
       <span data-i18n="copyCss">Copy CSS</span>
     </button>
 
-    <!-- Recent -->
-    <section class="panel">
+    <!-- Recent (hidden when empty) -->
+    <section class="panel" id="recentPanel" hidden>
       <h2 class="panel-title" data-i18n="recent">Recent</h2>
       <div id="recentList" class="swatch-row"></div>
     </section>
 
-    <!-- Favorites -->
-    <section class="panel">
+    <!-- Favorites (hidden when empty) -->
+    <section class="panel" id="favPanel" hidden>
       <div class="panel-head">
         <h2 class="panel-title" data-i18n="favorites">Favorites</h2>
         <button id="addFavBtn" class="add-btn" aria-label="Add to favorites">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
       <div id="favList" class="swatch-row"></div>

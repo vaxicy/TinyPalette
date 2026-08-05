@@ -47,9 +47,7 @@
   const el = {
     input: document.getElementById("hexInput"),
     picker: document.getElementById("colorPicker"),
-    preview: document.getElementById("previewCard"),
-    hint: document.getElementById("previewHint"),
-    hash: document.getElementById("hashSign"),
+    previewDot: document.getElementById("previewDot"),
     hexValue: document.getElementById("hexValue"),
     rgbValue: document.getElementById("rgbValue"),
     hslValue: document.getElementById("hslValue"),
@@ -57,10 +55,12 @@
     addFav: document.getElementById("addFavBtn"),
     recentList: document.getElementById("recentList"),
     favList: document.getElementById("favList"),
+    recentPanel: document.getElementById("recentPanel"),
+    favPanel: document.getElementById("favPanel"),
     toast: document.getElementById("toast")
   };
 
-  let currentHex = "#FFF7EB";
+  let currentHex = null;
   let lang = "en";
 
   // ---- i18n apply ----
@@ -136,7 +136,7 @@
     const { r, g, b } = hexToRgb(hex);
     const hsl = rgbToHsl(r, g, b);
 
-    el.preview.style.backgroundColor = hex;
+    el.previewDot.style.backgroundColor = hex;
     el.hexValue.textContent = hex.toUpperCase();
     el.rgbValue.textContent = `${r}, ${g}, ${b}`;
     el.hslValue.textContent = `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
@@ -210,9 +210,10 @@
   function renderRecent(list) {
     el.recentList.innerHTML = "";
     if (!list.length) {
-      el.recentList.innerHTML = `<span class="empty-note">${t("empty")}</span>`;
+      el.recentPanel.hidden = true;
       return;
     }
+    el.recentPanel.hidden = false;
     list.forEach((hex) => {
       const sw = makeSwatch(hex, false);
       el.recentList.appendChild(sw);
@@ -222,9 +223,10 @@
   function renderFav(list) {
     el.favList.innerHTML = "";
     if (!list.length) {
-      el.favList.innerHTML = `<span class="empty-note">${t("empty")}</span>`;
+      el.favPanel.hidden = true;
       return;
     }
+    el.favPanel.hidden = false;
     list.forEach((hex) => {
       const sw = makeSwatch(hex, true);
       el.favList.appendChild(sw);
@@ -280,11 +282,14 @@
     }
   });
 
-  el.preview.addEventListener("click", () => copyText(currentHex.toUpperCase()));
+  el.previewDot.addEventListener("click", () => {
+    if (currentHex) copyText(currentHex.toUpperCase());
+  });
 
   document.querySelectorAll(".copy-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
+      if (!currentHex) return;
       const type = btn.getAttribute("data-copy");
       if (type === "hex") copyText(currentHex.toUpperCase());
       else if (type === "rgb") copyText(el.rgbValue.textContent);
@@ -293,11 +298,15 @@
   });
 
   el.copyCss.addEventListener("click", () => {
+    if (!currentHex) { showToast(t("invalid")); return; }
     copyText(cssString(currentHex));
     showToast(t("cssCopied"));
   });
 
-  el.addFav.addEventListener("click", addToFav);
+  el.addFav.addEventListener("click", () => {
+    if (!currentHex) return;
+    addToFav();
+  });
 
   // ---- init ----
   function init() {
@@ -308,8 +317,13 @@
     lang = stored.indexOf("zh") === 0 ? "zh_CN" : "en";
     applyI18n();
 
-    render(currentHex);
-    pushRecent(currentHex);
+    // Start empty: values show "--", no default color applied.
+    el.hexValue.textContent = "--";
+    el.rgbValue.textContent = "--";
+    el.hslValue.textContent = "--";
+    el.previewDot.style.backgroundColor = "#EFE9ED";
+
+    getRecent().then(renderRecent);
     getFav().then(renderFav);
   }
 
