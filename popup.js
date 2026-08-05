@@ -39,7 +39,6 @@
   const el = {
     input: document.getElementById("hexInput"),
     picker: document.getElementById("colorPicker"),
-    previewDot: document.getElementById("previewDot"),
     hexValue: document.getElementById("hexValue"),
     rgbValue: document.getElementById("rgbValue"),
     hslValue: document.getElementById("hslValue"),
@@ -57,8 +56,6 @@
       const key = node.getAttribute("data-i18n");
       if (t[key]) node.textContent = t[key];
     });
-    el.previewDot.title = t("copyHex");
-    el.previewDot.setAttribute("aria-label", t("copyHex"));
     document.documentElement.lang = lang === "zh_CN" ? "zh-CN" : "en";
   }
 
@@ -115,7 +112,6 @@
     const { r, g, b } = hexToRgb(hex);
     const hsl = rgbToHsl(r, g, b);
 
-    el.previewDot.style.backgroundColor = hex;
     el.hexValue.textContent = hex.toUpperCase();
     el.rgbValue.textContent = `${r}, ${g}, ${b}`;
     el.hslValue.textContent = `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
@@ -173,10 +169,6 @@
     }
   });
 
-  el.previewDot.addEventListener("click", () => {
-    if (currentHex) copyText(currentHex.toUpperCase());
-  });
-
   document.querySelectorAll(".copy-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -207,7 +199,6 @@
     el.hexValue.textContent = "--";
     el.rgbValue.textContent = "--";
     el.hslValue.textContent = "--";
-    el.previewDot.style.backgroundColor = "#EFE9ED";
   }
 
   init();
