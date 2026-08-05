@@ -1,8 +1,11 @@
 :root {
   --bg: #FFFFFF;
   --primary: #E8A0BF;
+  --primary-rgb: 232, 160, 191;
   --primary-soft: rgba(232, 160, 191, 0.16);
   --primary-soft-2: rgba(232, 160, 191, 0.3);
+  --primary-shadow: rgba(232, 160, 191, 0.35);
+  --primary-shadow-hover: rgba(232, 160, 191, 0.45);
   --text: #4A4650;
   --text-soft: #9B8C95;
   --field: #FFFFFF;
@@ -55,11 +58,25 @@ body {
 }
 
 .brand-dot {
+  -webkit-appearance: none;
+  appearance: none;
   width: 11px;
   height: 11px;
+  border: none;
   border-radius: 50%;
+  padding: 0;
   background: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-soft);
+  cursor: pointer;
+  flex: none;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.brand-dot::-webkit-color-swatch-wrapper { padding: 0; }
+.brand-dot::-webkit-color-swatch { border: none; border-radius: 50%; }
+.brand-dot::-moz-color-swatch { border: none; border-radius: 50%; }
+.brand-dot:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 0 4px var(--primary-soft-2);
 }
 
 .brand {
@@ -199,11 +216,11 @@ body {
   padding: 7px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(232, 160, 191, 0.35);
+  box-shadow: 0 4px 12px var(--primary-shadow);
   transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
 .css-btn svg { width: 14px; height: 14px; }
-.css-btn:hover { box-shadow: 0 6px 16px rgba(232, 160, 191, 0.45); }
+.css-btn:hover { box-shadow: 0 6px 16px var(--primary-shadow-hover); }
 .css-btn:active { transform: scale(0.97); }
 
 /* Toast */

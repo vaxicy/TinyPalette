@@ -32,8 +32,11 @@
   };
 
   const STORAGE_KEYS = Object.freeze({
-    LANG: "tp_lang"
+    LANG: "tp_lang",
+    THEME: "tp_theme_color"
   });
+
+  const DEFAULT_THEME = "#E8A0BF";
 
   // ---- DOM ----
   const el = {
@@ -43,6 +46,7 @@
     rgbValue: document.getElementById("rgbValue"),
     hslValue: document.getElementById("hslValue"),
     copyCss: document.getElementById("copyCssBtn"),
+    themePicker: document.getElementById("themePicker"),
     toast: document.getElementById("toast")
   };
 
@@ -154,6 +158,43 @@
     return `background-color: ${hex.toUpperCase()};\n/* rgb(${r}, ${g}, ${b}) */`;
   }
 
+  // ---- theme color (UI accent) ----
+  function setThemeColor(hex) {
+    const norm = normalizeHex(hex);
+    if (!norm) return;
+    const { r, g, b } = hexToRgb(norm);
+    const root = document.documentElement.style;
+    root.setProperty("--primary", norm);
+    root.setProperty("--primary-rgb", `${r}, ${g}, ${b}`);
+    root.setProperty("--primary-soft", `rgba(${r}, ${g}, ${b}, 0.16)`);
+    root.setProperty("--primary-soft-2", `rgba(${r}, ${g}, ${b}, 0.3)`);
+    root.setProperty("--primary-shadow", `rgba(${r}, ${g}, ${b}, 0.35)`);
+    root.setProperty("--primary-shadow-hover", `rgba(${r}, ${g}, ${b}, 0.45)`);
+    root.setProperty("--field-border", `rgba(${r}, ${g}, ${b}, 0.3)`);
+    root.setProperty("--field-border-strong", `rgba(${r}, ${g}, ${b}, 0.5)`);
+  }
+
+  function loadThemeColor(cb) {
+    try {
+      chrome.storage.local.get(STORAGE_KEYS.THEME, (data) => {
+        const saved = data[STORAGE_KEYS.THEME];
+        if (saved && normalizeHex(saved)) {
+          cb(normalizeHex(saved));
+        } else {
+          cb(DEFAULT_THEME);
+        }
+      });
+    } catch (e) {
+      cb(DEFAULT_THEME);
+    }
+  }
+
+  function saveThemeColor(hex) {
+    try {
+      chrome.storage.local.set({ [STORAGE_KEYS.THEME]: hex });
+    } catch (e) {}
+  }
+
   // ---- events ----
   el.input.addEventListener("input", () => {
     const norm = normalizeHex(el.input.value);
@@ -186,6 +227,11 @@
     showToast(t("cssCopied"));
   });
 
+  el.themePicker.addEventListener("input", () => {
+    setThemeColor(el.themePicker.value);
+    saveThemeColor(el.themePicker.value);
+  });
+
   // ---- init ----
   function init() {
     let stored = "en";
@@ -194,6 +240,12 @@
     } catch (e) {}
     lang = stored.indexOf("zh") === 0 ? "zh_CN" : "en";
     applyI18n();
+
+    // Apply stored theme color (or default) to the whole UI accent.
+    loadThemeColor((hex) => {
+      setThemeColor(hex);
+      el.themePicker.value = hex;
+    });
 
     // Start empty: values show "--", no default color applied.
     el.hexValue.textContent = "--";
