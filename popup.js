@@ -106,6 +106,27 @@
     };
   }
 
+  function hslToHex(h, s, l) {
+    h = ((h % 360) + 360) % 360; s = clamp(s, 0, 100) / 100; l = clamp(l, 0, 100) / 100;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; }
+    else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; }
+    else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; }
+    else { r = c; b = x; }
+    const to = (v) => Math.round((v + m) * 255).toString(16).padStart(2, "0").toUpperCase();
+    return "#" + to(r) + to(g) + to(b);
+  }
+
+  function hexToRgba(hex, a) {
+    const { r, g, b } = hexToRgb(normalizeHex(hex) || "#000000");
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+
   function t(key) {
     return (I18N[lang] || I18N.en)[key];
   }
@@ -159,19 +180,68 @@
   }
 
   // ---- theme color (UI accent) ----
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function relativeLuminance(rr, gg, bb) {
+    const tr = (c) => {
+      c /= 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * tr(rr) + 0.7152 * tr(gg) + 0.0722 * tr(bb);
+  }
+
+  // Convert an accent hex into a same-hue creamy "handheld" palette so the
+  // whole background follows the chosen color while keeping the pixel vibe.
   function setThemeColor(hex) {
     const norm = normalizeHex(hex);
     if (!norm) return;
     const { r, g, b } = hexToRgb(norm);
+    let { h, s, l } = rgbToHsl(r, g, b);
+
+    // Derive a soft, light background from the accent hue.
+    const bgS = clamp(s * 0.28, 6, 35);        // low saturation creamy
+    const bgL = clamp(l * 0.98 + 60, 90, 97);  // near-white, follows brightness
+    const bg = hslToHex(h, bgS, bgL);
+
+    // Panel slightly whiter than bg.
+    const panel = hslToHex(h, clamp(s * 0.18, 4, 22), clamp(bgL + 2, 92, 99));
+
+    // Darker accent for borders / pixel details.
+    const primaryDark = hslToHex(h, clamp(s * 0.85, 18, 85), clamp(l * 0.66, 22, 52));
+
+    // Strongly darkened accent for text sitting directly on the accent background.
+    const deepAccent = hslToHex(h, clamp(s * 0.9, 20, 100), clamp(l * 0.35, 10, 35));
+
+    // Text: pick a readable deep tone based on accent lightness.
+    const textL = clamp(l > 62 ? l * 0.32 : l * 0.28, 14, 30);
+    const text = hslToHex(h, clamp(s * 0.7, 12, 60), textL);
+    const textSoft = hslToHex(h, clamp(s * 0.55, 10, 50), clamp(textL + 22, 38, 56));
+
+    // Smart button text: white on dark accents, darkened accent on light accents.
+    const lum = relativeLuminance(r, g, b);
+    const isDark = lum < 0.45;
+    const btnText = isDark ? "#FFFFFF" : deepAccent;
+    const btnTextShadow = isDark ? "rgba(0, 0, 0, 0.25)" : `rgba(${r}, ${g}, ${b}, 0.35)`;
+    const btnTextHover = "#FFFFFF";
+
     const root = document.documentElement.style;
     root.setProperty("--primary", norm);
     root.setProperty("--primary-rgb", `${r}, ${g}, ${b}`);
+    root.setProperty("--primary-dark", primaryDark);
+    root.setProperty("--bg", bg);
+    root.setProperty("--panel", panel);
+    root.setProperty("--text", text);
+    root.setProperty("--text-soft", textSoft);
     root.setProperty("--primary-soft", `rgba(${r}, ${g}, ${b}, 0.16)`);
     root.setProperty("--primary-soft-2", `rgba(${r}, ${g}, ${b}, 0.3)`);
     root.setProperty("--primary-shadow", `rgba(${r}, ${g}, ${b}, 0.35)`);
     root.setProperty("--primary-shadow-hover", `rgba(${r}, ${g}, ${b}, 0.45)`);
     root.setProperty("--field-border", `rgba(${r}, ${g}, ${b}, 0.3)`);
     root.setProperty("--field-border-strong", `rgba(${r}, ${g}, ${b}, 0.5)`);
+    root.setProperty("--shadow-sm", `2px 2px 0 ${hexToRgba(primaryDark, 0.18)}`);
+    root.setProperty("--btn-text", btnText);
+    root.setProperty("--btn-text-shadow", btnTextShadow);
+    root.setProperty("--btn-text-hover", btnTextHover);
   }
 
   function loadThemeColor(cb) {
