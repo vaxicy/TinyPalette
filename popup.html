@@ -33,7 +33,7 @@
         value="#E8A0BF"
         aria-label="Pick a color"
       />
-      <span id="previewDot" class="preview-dot" aria-hidden="true"></span>
+      <span id="previewDot" class="preview-dot" title="Copy HEX" role="button" tabindex="0" aria-label="Copy HEX"></span>
     </section>
 
     <!-- Info rows -->
@@ -75,16 +75,6 @@
       <div id="recentList" class="swatch-row"></div>
     </section>
 
-    <!-- Favorites (hidden when empty) -->
-    <section class="panel" id="favPanel" hidden>
-      <div class="panel-head">
-        <h2 class="panel-title" data-i18n="favorites">Favorites</h2>
-        <button id="addFavBtn" class="add-btn" aria-label="Add to favorites">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-      </div>
-      <div id="favList" class="swatch-row"></div>
-    </section>
   </main>
 
   <!-- Toast -->

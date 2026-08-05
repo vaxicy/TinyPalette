@@ -12,12 +12,12 @@
       hsl: "HSL",
       copyCss: "Copy CSS",
       recent: "Recent",
-      favorites: "Favorites",
       copied: "Copied!",
       cssCopied: "CSS copied!",
-      saved: "Saved to favorites",
       invalid: "Invalid HEX",
-      empty: "Nothing here yet"
+      empty: "Nothing here yet",
+      delRecent: "Remove",
+      copyHex: "Copy HEX"
     },
     zh_CN: {
       brand: "TinyPalette",
@@ -28,18 +28,17 @@
       hsl: "HSL",
       copyCss: "复制 CSS",
       recent: "最近使用",
-      favorites: "收藏夹",
       copied: "已复制！",
       cssCopied: "已复制 CSS！",
-      saved: "已加入收藏",
       invalid: "无效 HEX",
-      empty: "暂无记录"
+      empty: "暂无记录",
+      delRecent: "删除",
+      copyHex: "复制 HEX"
     }
   };
 
   const STORAGE_KEYS = Object.freeze({
-    RECENT: "tp_recent",
-    FAV: "tp_favorites"
+    RECENT: "tp_recent"
   });
   const MAX_RECENT = 12;
 
@@ -52,11 +51,8 @@
     rgbValue: document.getElementById("rgbValue"),
     hslValue: document.getElementById("hslValue"),
     copyCss: document.getElementById("copyCssBtn"),
-    addFav: document.getElementById("addFavBtn"),
     recentList: document.getElementById("recentList"),
-    favList: document.getElementById("favList"),
     recentPanel: document.getElementById("recentPanel"),
-    favPanel: document.getElementById("favPanel"),
     toast: document.getElementById("toast")
   };
 
@@ -70,6 +66,8 @@
       const key = node.getAttribute("data-i18n");
       if (t[key]) node.textContent = t[key];
     });
+    el.previewDot.title = t("copyHex");
+    el.previewDot.setAttribute("aria-label", t("copyHex"));
     document.documentElement.lang = lang === "zh_CN" ? "zh-CN" : "en";
   }
 
@@ -186,17 +184,8 @@
         res(Array.isArray(d[STORAGE_KEYS.RECENT]) ? d[STORAGE_KEYS.RECENT] : []));
     });
   }
-  function getFav() {
-    return new Promise((res) => {
-      chrome.storage.local.get(STORAGE_KEYS.FAV, (d) =>
-        res(Array.isArray(d[STORAGE_KEYS.FAV]) ? d[STORAGE_KEYS.FAV] : []));
-    });
-  }
   function setRecent(arr) {
     chrome.storage.local.set({ [STORAGE_KEYS.RECENT]: arr });
-  }
-  function setFav(arr) {
-    chrome.storage.local.set({ [STORAGE_KEYS.FAV]: arr });
   }
 
   function pushRecent(hex) {
@@ -215,25 +204,12 @@
     }
     el.recentPanel.hidden = false;
     list.forEach((hex) => {
-      const sw = makeSwatch(hex, false);
+      const sw = makeSwatch(hex);
       el.recentList.appendChild(sw);
     });
   }
 
-  function renderFav(list) {
-    el.favList.innerHTML = "";
-    if (!list.length) {
-      el.favPanel.hidden = true;
-      return;
-    }
-    el.favPanel.hidden = false;
-    list.forEach((hex) => {
-      const sw = makeSwatch(hex, true);
-      el.favList.appendChild(sw);
-    });
-  }
-
-  function makeSwatch(hex, isFav) {
+  function makeSwatch(hex) {
     const sw = document.createElement("div");
     sw.className = "swatch";
     sw.style.backgroundColor = hex;
@@ -243,25 +219,25 @@
       const norm = normalizeHex(hex);
       if (norm) { render(norm); pushRecent(norm); }
     });
-    if (isFav) {
-      const star = document.createElement("span");
-      star.className = "fav-star";
-      star.textContent = "★";
-      sw.appendChild(star);
-    }
+    const del = document.createElement("button");
+    del.className = "del-btn";
+    del.type = "button";
+    del.textContent = "×";
+    del.setAttribute("aria-label", t("delRecent"));
+    del.title = t("delRecent");
+    del.addEventListener("click", (e) => {
+      e.stopPropagation();
+      removeRecent(hex);
+    });
+    sw.appendChild(del);
     return sw;
   }
 
-  function addToFav() {
-    getFav().then((list) => {
-      if (list.includes(currentHex)) {
-        showToast(t("saved"));
-        return;
-      }
-      const next = [currentHex, ...list];
-      setFav(next);
-      renderFav(next);
-      showToast(t("saved"));
+  function removeRecent(hex) {
+    getRecent().then((list) => {
+      const next = list.filter((c) => c !== hex);
+      setRecent(next);
+      renderRecent(next);
     });
   }
 
@@ -303,11 +279,6 @@
     showToast(t("cssCopied"));
   });
 
-  el.addFav.addEventListener("click", () => {
-    if (!currentHex) return;
-    addToFav();
-  });
-
   // ---- init ----
   function init() {
     let stored = "en";
@@ -324,7 +295,6 @@
     el.previewDot.style.backgroundColor = "#EFE9ED";
 
     getRecent().then(renderRecent);
-    getFav().then(renderFav);
   }
 
   init();
