@@ -238,11 +238,6 @@ body {
   line-height: 1.2;
 }
 .css-btn svg { width: 10px; height: 10px; flex: none; }
-.css-btn:hover {
-  background: var(--primary-dark);
-  color: var(--btn-text-hover, #fff);
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
-}
 .css-btn:active {
   transform: translate(2px, 2px);
   box-shadow: none;
