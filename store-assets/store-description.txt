@@ -1,32 +1,32 @@
 === 中文详细说明 ===
 
-TinyPalette（Pixel Color Picker - 像素吸色器）是一款小巧可爱的像素风网页取色工具，专为设计师、开发者和创作者打造。输入任意 HEX 色值，即可实时预览并自动转换为 RGB、HSL 格式；一键复制 HEX、RGB、HSL 或现成 CSS 片段，让配色工作变得轻松高效。
+TinyPalette 是一款轻量可爱的浏览器色彩小助手，专为设计师、前端开发者和任何需要随手查看色值的人打造。输入 HEX 色值即可即时预览，并自动转换为 RGB 与 HSL；也可以打开内置的可视化取色面板，自由拖拽选择理想颜色。
 
-内置饱和度/明度与色相双画布取色器，支持自由拖拽选色；整弹窗的主题强调色可随心切换，背景会跟随所选色调自动渲染，带来温暖一致的视觉体验。界面采用轻盈的毛玻璃风格，支持英文与简体中文一键切换，所有设置均保存在本地，无需联网即可使用。
+支持一键复制 HEX、RGB、HSL 或现成的 CSS 片段，配色工作变得简单高效。界面支持英文与简体中文一键切换，你还可以自定义主题强调色，让整个弹窗的色调跟随你的选择自动变化。所有语言与主题偏好仅保存在本地，无需联网权限，安装后点击 Chrome 工具栏图标即可随时使用。
 
-TinyPalette 纯本地运行，不收集、不上传任何用户数据，所有计算都在浏览器内完成。安装后点击 Chrome 工具栏图标即可随时取色，是日常设计、前端开发、配色灵感记录的好帮手。
+TinyPalette 纯本地运行，不收集、不上传任何用户数据，所有颜色计算都在浏览器内完成。
 
 主要功能：
 • 输入 HEX 即时预览，自动转换 RGB / HSL
 • 一键复制 HEX、RGB、HSL 与 CSS 代码片段
-• 内置画布取色器，拖拽自由选色
-• 主题强调色自定义，界面色调同步变化
-• 中英双语界面，本地存储语言偏好
-• 轻量像素风 UI，操作简单无干扰
+• 内置色相 / 饱和度 / 明度取色面板，拖拽自由选色
+• 主题强调色自定义，界面色调同步跟随
+• 中英双语界面，本地存储偏好
+• 轻量无干扰，开箱即用
 
 
 === English Detailed Description ===
 
-TinyPalette (Pixel Color Picker) is a tiny, delightful pixel-style color companion for designers, developers, and creators. Enter any HEX value to instantly preview it, while the extension automatically converts it into RGB and HSL formats. With one tap, copy HEX, RGB, HSL, or a ready-to-use CSS snippet to streamline your color workflow.
+TinyPalette is a lightweight, delightful color companion for designers, front-end developers, and anyone who needs to check color values on the fly. Enter a HEX code to instantly preview it, with automatic conversion to RGB and HSL. You can also open the built-in visual color picker to drag and select any color you like.
 
-The built-in color picker features dual canvases for saturation/value and hue, letting you drag to select any color freely. The whole popup accent color can be customized, and the background automatically tints itself to match your chosen hue, creating a warm, cohesive look. The interface uses a soft glassmorphism style and supports English and Simplified Chinese with a single click. All preferences are stored locally, and the extension works completely offline.
+Copy HEX, RGB, HSL, or a ready-to-use CSS snippet with one click, making color workflows fast and simple. The interface supports English and Simplified Chinese switching, and you can customize the accent theme color so the entire popup automatically tints itself to match. All language and theme preferences are stored locally; no network permissions are required. Just click the TinyPalette icon in the Chrome toolbar whenever you need a color.
 
-TinyPalette runs entirely on your device. It does not collect or upload any user data, and all color calculations happen inside the browser. Just click the TinyPalette icon in the Chrome toolbar whenever you need a color — perfect for daily design, frontend development, and capturing color inspiration.
+TinyPalette runs entirely on your device. It does not collect or upload any user data, and all color calculations happen inside the browser.
 
 Key features:
 • Enter a HEX value for instant preview and RGB / HSL conversion
 • One-click copy for HEX, RGB, HSL, and CSS snippet
-• Built-in canvas color picker with drag-to-select
+• Built-in hue / saturation / lightness color picker with drag-to-select
 • Customizable accent theme color with matching UI tint
 • Bilingual UI: English and Simplified Chinese
-• Lightweight pixel-style interface with zero distractions
+• Lightweight and distraction-free, ready to use out of the box
