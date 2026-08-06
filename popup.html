@@ -10,14 +10,13 @@
     <!-- Pixel header -->
     <header class="header">
       <span class="header-decor" aria-hidden="true">◆</span>
-      <input
+      <button
         id="themePicker"
         class="brand-dot"
-        type="color"
-        value="#E8A0BF"
+        type="button"
         aria-label="Change UI theme color"
         title="Change UI theme color"
-      />
+      ></button>
       <h1 class="brand" data-i18n="brand">TinyPalette</h1>
       <span class="header-decor" aria-hidden="true">◆</span>
     </header>
@@ -35,13 +34,13 @@
         placeholder="ENTER HEX"
         aria-label="HEX color code"
       />
-      <input
+      <button
         id="colorPicker"
         class="color-picker"
-        type="color"
-        value="#E8A0BF"
+        type="button"
         aria-label="Pick a color"
-      />
+        title="Pick a color"
+      ></button>
       <button class="copy-btn" data-copy="hex" aria-label="Copy HEX">
         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
       </button>
@@ -84,6 +83,25 @@
 
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Custom pixel color picker panel -->
+  <div id="pickerPanel" class="picker-panel" hidden>
+    <canvas id="svCanvas" class="sv-canvas" width="160" height="100"></canvas>
+    <canvas id="hueCanvas" class="hue-canvas" width="160" height="12"></canvas>
+    <div class="picker-footer">
+      <span id="pickerPreview" class="picker-preview"></span>
+      <input
+        id="pickerHex"
+        class="picker-hex"
+        type="text"
+        spellcheck="false"
+        autocomplete="off"
+        maxlength="6"
+        aria-label="HEX color code"
+      />
+      <button id="pickerOk" class="picker-ok" type="button" data-i18n="ok">OK</button>
+    </div>
+  </div>
 
   <script src="popup.js"></script>
 </body>

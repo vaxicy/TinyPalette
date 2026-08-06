@@ -14,7 +14,8 @@
       copied: "Copied!",
       cssCopied: "CSS copied!",
       invalid: "Invalid HEX",
-      copyHex: "Copy HEX"
+      copyHex: "Copy HEX",
+      ok: "OK"
     },
     zh_CN: {
       brand: "TinyPalette",
@@ -27,7 +28,8 @@
       copied: "已复制！",
       cssCopied: "已复制 CSS！",
       invalid: "无效 HEX",
-      copyHex: "复制 HEX"
+      copyHex: "复制 HEX",
+      ok: "确定"
     }
   };
 
@@ -47,7 +49,13 @@
     hslValue: document.getElementById("hslValue"),
     copyCss: document.getElementById("copyCssBtn"),
     themePicker: document.getElementById("themePicker"),
-    toast: document.getElementById("toast")
+    toast: document.getElementById("toast"),
+    panel: document.getElementById("pickerPanel"),
+    svCanvas: document.getElementById("svCanvas"),
+    hueCanvas: document.getElementById("hueCanvas"),
+    preview: document.getElementById("pickerPreview"),
+    pickerHex: document.getElementById("pickerHex"),
+    pickerOk: document.getElementById("pickerOk")
   };
 
   let currentHex = null;
@@ -143,7 +151,7 @@
     el.rgbValue.textContent = `${r}, ${g}, ${b}`;
     el.hslValue.textContent = `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
     el.input.value = hex.replace("#", "").toUpperCase();
-    el.picker.value = hex;
+    if (el.panel.hidden) el.picker.style.background = hex;
   }
 
   // ---- toast ----
@@ -275,11 +283,11 @@
     }
   });
 
-  el.picker.addEventListener("input", () => {
-    const norm = normalizeHex(el.picker.value);
-    if (norm) {
-      render(norm);
-    }
+  el.picker.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openPanel(currentHex || "#E8A0BF", (hex) => {
+      render(hex);
+    });
   });
 
   document.querySelectorAll(".copy-btn").forEach((btn) => {
@@ -299,9 +307,136 @@
     showToast(t("cssCopied"));
   });
 
-  el.themePicker.addEventListener("input", () => {
-    setThemeColor(el.themePicker.value);
-    saveThemeColor(el.themePicker.value);
+  el.themePicker.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openPanel(el.themePicker.style.background || DEFAULT_THEME, (hex) => {
+      setThemeColor(hex);
+      saveThemeColor(hex);
+    });
+  });
+
+  // ---- custom pixel color picker panel ----
+  let panelState = { h: 0, s: 0, l: 0, onPick: null, hueDrag: false, svDrag: false };
+
+  function drawSV() {
+    const ctx = el.svCanvas.getContext("2d");
+    const w = el.svCanvas.width, h = el.svCanvas.height;
+    const base = hslToHex(panelState.h, 100, 50);
+    // horizontal saturation gradient (white -> full hue)
+    const gx = ctx.createLinearGradient(0, 0, w, 0);
+    gx.addColorStop(0, "#FFFFFF");
+    gx.addColorStop(1, base);
+    ctx.fillStyle = gx;
+    ctx.fillRect(0, 0, w, h);
+    // vertical lightness gradient (transparent -> black)
+    const gy = ctx.createLinearGradient(0, 0, 0, h);
+    gy.addColorStop(0, "rgba(0,0,0,0)");
+    gy.addColorStop(1, "rgba(0,0,0,1)");
+    ctx.fillStyle = gy;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function drawHue() {
+    const ctx = el.hueCanvas.getContext("2d");
+    const w = el.hueCanvas.width, h = el.hueCanvas.height;
+    const g = ctx.createLinearGradient(0, 0, w, 0);
+    for (let i = 0; i <= 6; i++) {
+      g.addColorStop(i / 6, hslToHex(i * 60, 100, 50));
+    }
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function panelRender() {
+    const hex = hslToHex(panelState.h, panelState.s, panelState.l);
+    el.preview.style.background = hex;
+    el.pickerHex.value = hex.replace("#", "").toUpperCase();
+  }
+
+  function openPanel(initialHex, onPick) {
+    const norm = normalizeHex(initialHex) || DEFAULT_THEME;
+    const { r, g, b } = hexToRgb(norm);
+    const hsl = rgbToHsl(r, g, b);
+    panelState.h = hsl.h;
+    panelState.s = hsl.s;
+    panelState.l = hsl.l;
+    panelState.onPick = onPick;
+    drawSV();
+    drawHue();
+    panelRender();
+    el.panel.hidden = false;
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      chrome.runtime.getManifest(); // no-op keep SW alive
+    }
+  }
+
+  function closePanel() {
+    el.panel.hidden = true;
+    panelState.onPick = null;
+  }
+
+  function svFromEvent(e) {
+    const rect = el.svCanvas.getBoundingClientRect();
+    const x = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    const y = clamp((e.clientY - rect.top) / rect.height, 0, 1);
+    panelState.s = Math.round(x * 100);
+    panelState.l = Math.round((1 - y) * 100);
+    panelRender();
+  }
+
+  function hueFromEvent(e) {
+    const rect = el.hueCanvas.getBoundingClientRect();
+    const x = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    panelState.h = Math.round(x * 360);
+    drawSV();
+    panelRender();
+  }
+
+  el.svCanvas.addEventListener("pointerdown", (e) => {
+    panelState.svDrag = true;
+    el.svCanvas.setPointerCapture(e.pointerId);
+    svFromEvent(e);
+  });
+  el.svCanvas.addEventListener("pointermove", (e) => {
+    if (panelState.svDrag) svFromEvent(e);
+  });
+  el.svCanvas.addEventListener("pointerup", () => { panelState.svDrag = false; });
+
+  el.hueCanvas.addEventListener("pointerdown", (e) => {
+    panelState.hueDrag = true;
+    el.hueCanvas.setPointerCapture(e.pointerId);
+    hueFromEvent(e);
+  });
+  el.hueCanvas.addEventListener("pointermove", (e) => {
+    if (panelState.hueDrag) hueFromEvent(e);
+  });
+  el.hueCanvas.addEventListener("pointerup", () => { panelState.hueDrag = false; });
+
+  el.pickerHex.addEventListener("input", () => {
+    const norm = normalizeHex(el.pickerHex.value);
+    if (norm) {
+      const { r, g, b } = hexToRgb(norm);
+      const hsl = rgbToHsl(r, g, b);
+      panelState.h = hsl.h; panelState.s = hsl.s; panelState.l = hsl.l;
+      drawSV();
+      el.preview.style.background = norm;
+    }
+  });
+
+  el.pickerOk.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const norm = normalizeHex(el.pickerHex.value) || hslToHex(panelState.h, panelState.s, panelState.l);
+    const cb = panelState.onPick;
+    closePanel();
+    if (cb) cb(norm);
+  });
+
+  // close panel when clicking outside
+  document.addEventListener("click", (e) => {
+    if (el.panel.hidden) return;
+    if (!el.panel.contains(e.target) && e.target !== el.picker && e.target !== el.themePicker) {
+      closePanel();
+    }
   });
 
   // ---- init ----
@@ -316,7 +451,7 @@
     // Apply stored theme color (or default) to the whole UI accent.
     loadThemeColor((hex) => {
       setThemeColor(hex);
-      el.themePicker.value = hex;
+      el.themePicker.style.background = hex;
     });
 
     // Start empty: values show "--", no default color applied.
