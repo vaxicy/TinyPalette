@@ -65,6 +65,7 @@
 
   // ---- color utils ----
   function normalizeHex(raw) {
+    if (typeof raw !== "string") return null;
     if (!raw) return null;
     let h = raw.trim().replace(/^#/, "").toUpperCase();
     if (/^[0-9A-F]{3}$/.test(h)) {
@@ -107,6 +108,7 @@
   }
 
   function hslToHex(h, s, l) {
+    h = Number(h) || 0; s = Number(s) || 0; l = Number(l) || 0;
     h = ((h % 360) + 360) % 360; s = clamp(s, 0, 100) / 100; l = clamp(l, 0, 100) / 100;
     const c = (1 - Math.abs(2 * l - 1)) * s;
     const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
