@@ -28,7 +28,7 @@
       rgb: "RGB",
       hsl: "HSL",
       copyCss: "复制 CSS",
-      enterHex: "输入 HEX",
+      enterHex: "ENTER HEX",
       copied: "已复制！",
       cssCopied: "已复制 CSS！",
       invalid: "无效 HEX",
