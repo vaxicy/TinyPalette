@@ -1,10 +1,10 @@
 {
   "ext_name": {
-    "message": "TinyPalette 调色盘",
+    "message": "TinyPalette",
     "description": "Extension name"
   },
   "ext_short_name": {
-    "message": "调色盘",
+    "message": "TinyPalette",
     "description": "Short name"
   },
   "ext_description": {
@@ -12,7 +12,7 @@
     "description": "Store listing description"
   },
   "action_title": {
-    "message": "TinyPalette - 小巧的色彩小助手",
+    "message": "TinyPalette - 小巧可爱的色彩小助手",
     "description": "Toolbar tooltip"
   }
 }
