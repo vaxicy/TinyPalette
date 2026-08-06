@@ -17,6 +17,7 @@
   --text-soft: #A87E8F;
   --field-border: rgba(232, 160, 191, 0.55);
   --field-border-strong: rgba(232, 160, 191, 0.85);
+  --placeholder: #DCC8D0;
   --shadow-sm: 2px 2px 0 rgba(90, 61, 77, 0.12);
   --radius: 2px;
   --radius-sm: 2px;
@@ -154,7 +155,7 @@ body {
 }
 
 .hex-input::placeholder {
-  color: #DCC8D0;
+  color: var(--placeholder);
   font-size: 8px;
   letter-spacing: 0.02em;
 }

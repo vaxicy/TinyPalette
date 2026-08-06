@@ -263,6 +263,12 @@
     root.setProperty("--primary-shadow-hover", `rgba(${r}, ${g}, ${b}, 0.45)`);
     root.setProperty("--field-border", `rgba(${r}, ${g}, ${b}, 0.3)`);
     root.setProperty("--field-border-strong", `rgba(${r}, ${g}, ${b}, 0.5)`);
+    // Placeholder: readable tint of accent hue. Dark accents get a soft
+    // light tint, light accents get a muted darker tint for contrast.
+    const placeholder = isDark
+      ? hslToHex(h, clamp(s * 0.4, 10, 60), clamp(l * 1.1 + 55, 70, 88))
+      : hslToHex(h, clamp(s * 0.5, 12, 55), clamp(l * 0.6, 45, 62));
+    root.setProperty("--placeholder", placeholder);
     root.setProperty("--shadow-sm", `2px 2px 0 ${hexToRgba(primaryDark, 0.18)}`);
     root.setProperty("--btn-text", btnText);
     root.setProperty("--btn-text-shadow", btnTextShadow);
