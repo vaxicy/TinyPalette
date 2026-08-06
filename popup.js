@@ -17,7 +17,7 @@
       copyHex: "Copy HEX",
       ok: "OK",
       switchLang: "Switch to Chinese",
-      switchLangTip: "EN / 中"
+      switchLangTip: "EN / ZH"
     },
     zh_CN: {
       brand: "TinyPalette",
@@ -33,7 +33,7 @@
       copyHex: "复制 HEX",
       ok: "确定",
       switchLang: "切换到英文",
-      switchLangTip: "中 / EN"
+      switchLangTip: "ZH / EN"
     }
   };
 
