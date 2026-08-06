@@ -11,6 +11,7 @@
       rgb: "RGB",
       hsl: "HSL",
       copyCss: "Copy CSS",
+      enterHex: "ENTER HEX",
       copied: "Copied!",
       cssCopied: "CSS copied!",
       invalid: "Invalid HEX",
@@ -27,6 +28,7 @@
       rgb: "RGB",
       hsl: "HSL",
       copyCss: "复制 CSS",
+      enterHex: "输入 HEX",
       copied: "已复制！",
       cssCopied: "已复制 CSS！",
       invalid: "无效 HEX",
@@ -72,6 +74,10 @@
     document.querySelectorAll("[data-i18n]").forEach((node) => {
       const key = node.getAttribute("data-i18n");
       if (t[key]) node.textContent = t[key];
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+      const key = node.getAttribute("data-i18n-placeholder");
+      if (t[key]) node.placeholder = t[key];
     });
     document.documentElement.lang = lang === "zh_CN" ? "zh-CN" : "en";
     if (el.langToggle) {
