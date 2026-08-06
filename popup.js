@@ -151,7 +151,7 @@
     el.rgbValue.textContent = `${r}, ${g}, ${b}`;
     el.hslValue.textContent = `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
     el.input.value = hex.replace("#", "").toUpperCase();
-    if (el.panel.hidden) el.picker.style.background = hex;
+    el.picker.style.background = hex;
   }
 
   // ---- toast ----
@@ -252,6 +252,7 @@
     root.setProperty("--btn-text", btnText);
     root.setProperty("--btn-text-shadow", btnTextShadow);
     root.setProperty("--btn-text-hover", btnTextHover);
+    el.themePicker.style.background = norm;
   }
 
   function loadThemeColor(cb) {
@@ -467,7 +468,6 @@
     // Apply stored theme color (or default) to the whole UI accent.
     loadThemeColor((hex) => {
       setThemeColor(hex);
-      el.themePicker.style.background = hex;
     });
 
     // Start empty: values show "--", no default color applied.
