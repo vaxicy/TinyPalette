@@ -1,0 +1,32 @@
+=== 中文详细说明 ===
+
+TinyPalette（Pixel Color Picker - 像素吸色器）是一款小巧可爱的像素风网页取色工具，专为设计师、开发者和创作者打造。输入任意 HEX 色值，即可实时预览并自动转换为 RGB、HSL 格式；一键复制 HEX、RGB、HSL 或现成 CSS 片段，让配色工作变得轻松高效。
+
+内置饱和度/明度与色相双画布取色器，支持自由拖拽选色；整弹窗的主题强调色可随心切换，背景会跟随所选色调自动渲染，带来温暖一致的视觉体验。界面采用轻盈的毛玻璃风格，支持英文与简体中文一键切换，所有设置均保存在本地，无需联网即可使用。
+
+TinyPalette 纯本地运行，不收集、不上传任何用户数据，所有计算都在浏览器内完成。安装后点击 Chrome 工具栏图标即可随时取色，是日常设计、前端开发、配色灵感记录的好帮手。
+
+主要功能：
+• 输入 HEX 即时预览，自动转换 RGB / HSL
+• 一键复制 HEX、RGB、HSL 与 CSS 代码片段
+• 内置画布取色器，拖拽自由选色
+• 主题强调色自定义，界面色调同步变化
+• 中英双语界面，本地存储语言偏好
+• 轻量像素风 UI，操作简单无干扰
+
+
+=== English Detailed Description ===
+
+TinyPalette (Pixel Color Picker) is a tiny, delightful pixel-style color companion for designers, developers, and creators. Enter any HEX value to instantly preview it, while the extension automatically converts it into RGB and HSL formats. With one tap, copy HEX, RGB, HSL, or a ready-to-use CSS snippet to streamline your color workflow.
+
+The built-in color picker features dual canvases for saturation/value and hue, letting you drag to select any color freely. The whole popup accent color can be customized, and the background automatically tints itself to match your chosen hue, creating a warm, cohesive look. The interface uses a soft glassmorphism style and supports English and Simplified Chinese with a single click. All preferences are stored locally, and the extension works completely offline.
+
+TinyPalette runs entirely on your device. It does not collect or upload any user data, and all color calculations happen inside the browser. Just click the TinyPalette icon in the Chrome toolbar whenever you need a color — perfect for daily design, frontend development, and capturing color inspiration.
+
+Key features:
+• Enter a HEX value for instant preview and RGB / HSL conversion
+• One-click copy for HEX, RGB, HSL, and CSS snippet
+• Built-in canvas color picker with drag-to-select
+• Customizable accent theme color with matching UI tint
+• Bilingual UI: English and Simplified Chinese
+• Lightweight pixel-style interface with zero distractions

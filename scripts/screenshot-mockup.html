@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @font-face {
+      font-family: 'Pixel';
+      src: url('fonts/PressStart2P-Regular.ttf') format('truetype');
+      font-weight: 400; font-style: normal;
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      background:
+        radial-gradient(420px 420px at 12% 22%, rgba(232,160,191,0.22), transparent 70%),
+        radial-gradient(340px 340px at 88% 82%, rgba(201,182,232,0.18), transparent 70%),
+        #FFF0F5;
+      color: #5A3D4D;
+      overflow: hidden;
+    }
+
+    /* Chrome toolbar */
+    .toolbar {
+      height: 56px;
+      background: #DEE1E6;
+      border-bottom: 1px solid #C7CBD1;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 14px;
+    }
+    .nav { color: #6b7280; font-size: 18px; display: flex; gap: 16px; }
+    .addr {
+      flex: 1;
+      margin: 0 40px 0 10px;
+      height: 30px;
+      background: #fff;
+      border: 1px solid #C7CBD1;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      color: #5f6b7a;
+      font-size: 13px;
+    }
+    .addr .lock { font-size: 12px; margin-right: 8px; }
+    .ext-icons { display: flex; gap: 12px; align-items: center; }
+    .ext-icons img { width: 30px; height: 30px; display: block; }
+
+    .stage {
+      position: relative;
+      height: calc(100% - 56px);
+    }
+
+    /* Left tagline */
+    .tagline {
+      position: absolute;
+      left: 120px;
+      top: 175px;
+      max-width: 380px;
+    }
+    .tagline .title {
+      font-family: 'Pixel', 'Courier New', monospace;
+      font-size: 32px;
+      color: #5A3D4D;
+      letter-spacing: 1px;
+      line-height: 1.3;
+      text-shadow: 3px 3px 0 rgba(90,61,77,0.12), -1px 0 0 #5A3D4D, 0 -1px 0 #5A3D4D, 1px 0 0 #5A3D4D, 0 1px 0 #5A3D4D;
+    }
+    .tagline .sub {
+      margin-top: 14px;
+      font-size: 15px;
+      color: #A87E8F;
+    }
+    .tagline ul { list-style: none; margin-top: 26px; }
+    .tagline li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: #5A3D4D;
+      margin-bottom: 16px;
+    }
+    .tagline li .dot {
+      width: 12px; height: 12px;
+      background: #E8A0BF;
+      border: 2px solid #5A3D4D;
+      flex: none;
+    }
+    .tagline .hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #A87E8F;
+    }
+
+    /* Popup card (real popup mock) */
+    .popup-wrap {
+      position: absolute;
+      right: 150px;
+      top: 70px;
+    }
+    .toolbar-hint {
+      text-align: center;
+      font-size: 11px;
+      color: #A87E8F;
+      margin-bottom: 8px;
+    }
+    .popup {
+      width: 340px;
+      background: #FFFDF9;
+      border: 3px solid #5A3D4D;
+      box-shadow: 4px 4px 0 rgba(90,61,77,0.12);
+      padding: 14px 16px 16px;
+      font-family: 'Pixel', 'Courier New', monospace;
+      color: #5A3D4D;
+      position: relative;
+    }
+    .popup .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding-bottom: 8px;
+      position: relative;
+    }
+    .popup .header .brand-dot {
+      width: 12px; height: 12px;
+      background: #E8A0BF;
+      border: 2px solid #5A3D4D;
+    }
+    .popup .header .brand {
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .popup .header .decor {
+      position: absolute;
+      right: 0;
+      color: #C97A9B;
+      font-size: 11px;
+    }
+    .popup .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFDF9;
+      border: 2px solid rgba(232,160,191,0.85);
+      padding: 8px 10px;
+      margin-top: 6px;
+      box-shadow: 2px 2px 0 rgba(90,61,77,0.12);
+    }
+    .popup .input-row .hash { font-size: 12px; color: #A87E8F; }
+    .popup .input-row .hex { flex: 1; font-size: 11px; letter-spacing: 0.04em; }
+    .popup .input-row .swatch {
+      width: 22px; height: 22px;
+      background: #E8A0BF;
+      border: 2px solid #5A3D4D;
+    }
+    .popup .input-row .copy {
+      width: 22px; height: 22px;
+      border: 2px solid #5A3D4D;
+      background: #FFFDF9;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .popup .info-list { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .popup .info-row {
+      display: flex; align-items: center; gap: 8px;
+      background: #FFFDF9;
+      border: 2px solid rgba(232,160,191,0.55);
+      padding: 8px 10px;
+      box-shadow: 2px 2px 0 rgba(90,61,77,0.12);
+    }
+    .popup .info-row .lbl { font-size: 9px; color: #A87E8F; width: 28px; }
+    .popup .info-row .val { flex: 1; font-size: 9px; letter-spacing: 0.02em; }
+    .popup .info-row .copy {
+      width: 20px; height: 20px;
+      border: 2px solid #5A3D4D;
+      background: #FFFDF9;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .popup .css-btn {
+      margin-top: 10px;
+      width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      border: 2px solid #5A3D4D;
+      background: #E8A0BF;
+      color: #fff;
+      font-family: 'Pixel', monospace;
+      font-size: 9px;
+      padding: 10px 6px;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+      box-shadow: 2px 2px 0 rgba(90,61,77,0.18);
+    }
+    /* open picker panel */
+    .popup .picker-panel {
+      margin-top: 10px;
+      background: #FFFDF9;
+      border: 2px solid rgba(232,160,191,0.85);
+      padding: 8px;
+      display: flex; flex-direction: column; gap: 6px;
+      box-shadow: 2px 2px 0 rgba(90,61,77,0.12);
+    }
+    .popup .picker-panel .sv {
+      width: 100%; height: 96px;
+      border: 2px solid #5A3D4D;
+      background:
+        linear-gradient(to top, #000, transparent),
+        linear-gradient(to right, #fff, #E8A0BF);
+    }
+    .popup .picker-panel .hue {
+      width: 100%; height: 16px;
+      border: 2px solid #5A3D4D;
+      background: linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);
+    }
+    .popup .picker-panel .foot { display: flex; align-items: center; gap: 8px; }
+    .popup .picker-panel .prev { width: 24px; height: 24px; background: #E8A0BF; border: 2px solid #5A3D4D; }
+    .popup .picker-panel .hex { flex: 1; font-size: 10px; border: 2px solid rgba(232,160,191,0.85); padding: 5px 8px; text-transform: uppercase; }
+    .popup .picker-panel .ok {
+      border: 2px solid #5A3D4D; background: #E8A0BF; color: #fff;
+      font-family: 'Pixel', monospace; font-size: 9px; padding: 5px 12px;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+    }
+    .toast-outside {
+      margin-top: 10px;
+      text-align: center;
+      background: #5A3D4D; color: #fff; font-size: 8px;
+      padding: 8px 14px; box-shadow: 3px 3px 0 rgba(90,61,77,0.35);
+      display: inline-block;
+      font-family: 'Pixel', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="nav">
+      <span>&#8592;</span><span>&#8594;</span><span>&#8635;</span>
+    </div>
+    <div class="addr"><span class="lock">&#128274;</span> chrome://extensions &nbsp;·&nbsp; tiny-palette</div>
+    <div class="ext-icons">
+      <img id="extIcon" alt="TinyPalette" />
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="tagline" id="tagline">
+      <div class="title">TinyPalette</div>
+      <div class="sub" id="sub">A tiny pixel-style color companion</div>
+      <ul id="feats">
+        <li><span class="dot"></span><span>Enter HEX to preview</span></li>
+        <li><span class="dot"></span><span>Auto-convert RGB / HSL</span></li>
+        <li><span class="dot"></span><span>One-click copy CSS</span></li>
+      </ul>
+      <div class="hint" id="hint">Click the toolbar icon to open</div>
+    </div>
+
+    <div class="popup-wrap">
+      <div class="toolbar-hint" id="thint">Click the toolbar icon to open</div>
+      <div class="popup">
+        <div class="header">
+          <span class="brand-dot"></span>
+          <span class="brand">TinyPalette</span>
+          <span class="decor">&#9670;</span>
+        </div>
+        <div class="input-row">
+          <span class="hash">#</span>
+          <span class="hex">E8A0BF</span>
+          <span class="swatch"></span>
+          <span class="copy">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#5A3D4D" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 0 0 1 2-2h10"/></svg>
+          </span>
+        </div>
+        <div class="info-list">
+          <div class="info-row">
+            <span class="lbl">HEX</span>
+            <span class="val">#E8A0BF</span>
+            <span class="copy"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#5A3D4D" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 0 0 1 2-2h10"/></svg></span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">RGB</span>
+            <span class="val">232, 160, 191</span>
+            <span class="copy"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#5A3D4D" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 0 0 1 2-2h10"/></svg></span>
+          </div>
+          <div class="info-row">
+            <span class="lbl">HSL</span>
+            <span class="val">340°, 64%, 77%</span>
+            <span class="copy"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#5A3D4D" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 0 0 1 2-2h10"/></svg></span>
+          </div>
+        </div>
+        <div class="css-btn">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 0 0 1-2 2H6a2 0 0 1-2-2V6a2 0 0 1 2-2h2"/><rect x="9" y="2" width="6" height="4" rx="1"/></svg>
+          <span>Copy CSS</span>
+        </div>
+        <div class="picker-panel">
+          <div class="sv"></div>
+          <div class="hue"></div>
+          <div class="foot">
+            <span class="prev"></span>
+            <span class="hex">E8A0BF</span>
+            <span class="ok">OK</span>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar-hint" style="margin-top:10px;text-align:center;">
+        <span class="toast-outside">Copied!</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Inject icon as data URL set by screenshot script via window.TOOLBAR_ICON
+    window.applyLang = function(lang) {
+      const t = {
+        en: {
+          sub: "A tiny pixel-style color companion",
+          feats: ["Enter HEX to preview", "Auto-convert RGB / HSL", "One-click copy CSS"],
+          hint: "Click the toolbar icon to open",
+          thint: "Click the toolbar icon to open",
+          css: "Copy CSS",
+          ok: "OK",
+          toast: "Copied!"
+        },
+        zh: {
+          sub: "小巧可爱的像素风调色伙伴",
+          feats: ["输入 HEX 即时预览", "自动转换 RGB / HSL", "一键复制 CSS 代码"],
+          hint: "点击工具栏图标打开",
+          thint: "点击工具栏图标打开",
+          css: "复制 CSS",
+          ok: "确定",
+          toast: "已复制！"
+        }
+      }[lang];
+      document.getElementById('sub').textContent = t.sub;
+      document.getElementById('hint').textContent = t.hint;
+      document.getElementById('thint').textContent = t.thint;
+      const feats = document.getElementById('feats');
+      t.feats.forEach((f, i) => feats.children[i].children[1].textContent = f);
+      document.querySelector('.css-btn span').textContent = t.css;
+      document.querySelector('.picker-panel .ok').textContent = t.ok;
+      document.querySelector('.toast-outside').textContent = t.toast;
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    };
+  </script>
+</body>
+</html>

@@ -146,9 +146,9 @@ def draw_popup_mockup(img, cx, cy, lang):
     draw_text(d, rx + 36, row_y + 18, "E8A0BF", 14, TEXT)
     # color picker swatch
     d.rectangle([rx + rw - 52, row_y + 12, rx + rw - 24, row_y + 40], fill=PRIMARY, outline=TEXT, width=2)
-    # copy icon (simplified as two small rects)
-    d.rectangle([rx + rw - 22, row_y + 12, rx + rw - 6, row_y + 28], outline=TEXT, width=2)
-    d.rectangle([rx + rw - 30, row_y + 20, rx + rw - 14, row_y + 36], outline=TEXT, width=2)
+    # copy icon (front rect smaller and filled, back rect visible around it)
+    d.rectangle([rx + rw - 30, row_y + 16, rx + rw - 14, row_y + 32], fill=PANEL, outline=TEXT, width=2)
+    d.rectangle([rx + rw - 24, row_y + 10, rx + rw - 12, row_y + 22], fill=PANEL, outline=TEXT, width=2)
 
     # --- info rows ---
     row_h = 58
@@ -162,9 +162,9 @@ def draw_popup_mockup(img, cx, cy, lang):
         # value
         val = DEMO_HEX if key == "HEX" else DEMO_RGB if key == "RGB" else DEMO_HSL
         draw_text(d, rx + 70, y + 20, val, 11, TEXT)
-        # copy icon
-        d.rectangle([rx + rw - 28, y + 16, rx + rw - 10, y + 32], outline=TEXT, width=2)
-        d.rectangle([rx + rw - 36, y + 24, rx + rw - 18, y + 40], outline=TEXT, width=2)
+        # copy icon (front rect smaller and filled, back rect visible around it)
+        d.rectangle([rx + rw - 30, y + 16, rx + rw - 14, y + 32], fill=PANEL, outline=TEXT, width=2)
+        d.rectangle([rx + rw - 24, y + 10, rx + rw - 12, y + 22], fill=PANEL, outline=TEXT, width=2)
 
     # --- copy css button ---
     btn_y = start_y + 3 * (row_h + gap) + 8
