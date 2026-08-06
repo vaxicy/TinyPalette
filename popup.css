@@ -72,6 +72,26 @@ body {
   user-select: none;
 }
 
+.lang-toggle {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.lang-toggle:hover {
+  transform: scale(1.2) rotate(15deg);
+}
+
+.lang-toggle:active {
+  transform: scale(0.95);
+}
+
 .brand-dot {
   -webkit-appearance: none;
   appearance: none;
@@ -355,4 +375,26 @@ body {
 .picker-ok:active {
   transform: translate(1px, 1px);
   box-shadow: none;
+}
+
+/* Custom pixel tooltip */
+.tp-tooltip {
+  position: fixed;
+  z-index: 9999;
+  display: none;
+  padding: 3px 7px;
+  background: var(--primary-dark);
+  color: #FFFFFF;
+  font-family: var(--font);
+  font-size: 7px;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  white-space: nowrap;
+  border-radius: 0;
+  box-shadow: 2px 2px 0 rgba(90, 61, 77, 0.35);
+  pointer-events: none;
+}
+
+.tp-tooltip.show {
+  display: block;
 }

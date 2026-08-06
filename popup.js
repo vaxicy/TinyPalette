@@ -15,7 +15,9 @@
       cssCopied: "CSS copied!",
       invalid: "Invalid HEX",
       copyHex: "Copy HEX",
-      ok: "OK"
+      ok: "OK",
+      switchLang: "Switch to Chinese",
+      switchLangTip: "EN / 中"
     },
     zh_CN: {
       brand: "TinyPalette",
@@ -29,7 +31,9 @@
       cssCopied: "已复制 CSS！",
       invalid: "无效 HEX",
       copyHex: "复制 HEX",
-      ok: "确定"
+      ok: "确定",
+      switchLang: "切换到英文",
+      switchLangTip: "中 / EN"
     }
   };
 
@@ -55,7 +59,8 @@
     hueCanvas: document.getElementById("hueCanvas"),
     preview: document.getElementById("pickerPreview"),
     pickerHex: document.getElementById("pickerHex"),
-    pickerOk: document.getElementById("pickerOk")
+    pickerOk: document.getElementById("pickerOk"),
+    langToggle: document.getElementById("langToggle")
   };
 
   let currentHex = null;
@@ -69,6 +74,10 @@
       if (t[key]) node.textContent = t[key];
     });
     document.documentElement.lang = lang === "zh_CN" ? "zh-CN" : "en";
+    if (el.langToggle) {
+      el.langToggle.setAttribute("data-tooltip", t.switchLangTip);
+      el.langToggle.setAttribute("aria-label", t.switchLang);
+    }
   }
 
   // ---- color utils ----
@@ -319,6 +328,54 @@
       setThemeColor(hex);
     });
   });
+
+  // ---- language toggle ----
+  function switchLang() {
+    lang = lang === "zh_CN" ? "en" : "zh_CN";
+    try { localStorage.setItem(STORAGE_KEYS.LANG, lang); } catch (e) {}
+    applyI18n();
+  }
+
+  el.langToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    switchLang();
+  });
+
+  // ---- custom tooltip ----
+  const tip = document.createElement("div");
+  tip.className = "tp-tooltip";
+  tip.setAttribute("role", "tooltip");
+  document.body.appendChild(tip);
+
+  function showTip(target) {
+    const text = target.getAttribute("data-tooltip");
+    if (!text) return;
+    tip.textContent = text;
+    const r = target.getBoundingClientRect();
+    tip.classList.add("show");
+    const tr = tip.getBoundingClientRect();
+    let left = r.left + r.width / 2 - tr.width / 2;
+    left = Math.max(6, Math.min(left, window.innerWidth - tr.width - 6));
+    tip.style.left = left + "px";
+    tip.style.top = (r.bottom + 6) + "px";
+  }
+
+  function hideTip() {
+    tip.classList.remove("show");
+  }
+
+  document.addEventListener("mouseover", (e) => {
+    const node = e.target.closest("[data-tooltip]");
+    if (node) showTip(node);
+  });
+  document.addEventListener("mouseout", (e) => {
+    if (e.target.closest("[data-tooltip]")) hideTip();
+  });
+  document.addEventListener("focusin", (e) => {
+    const node = e.target.closest("[data-tooltip]");
+    if (node) showTip(node);
+  });
+  document.addEventListener("focusout", hideTip);
 
   // ---- custom pixel color picker panel ----
   let panelState = { h: 0, s: 0, l: 0, onPick: null, onLive: null, originalHex: null, committed: false, hueDrag: false, svDrag: false };
