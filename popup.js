@@ -287,6 +287,8 @@
     e.stopPropagation();
     openPanel(currentHex || "#E8A0BF", (hex) => {
       render(hex);
+    }, (hex) => {
+      render(hex);
     });
   });
 
@@ -312,11 +314,13 @@
     openPanel(el.themePicker.style.background || DEFAULT_THEME, (hex) => {
       setThemeColor(hex);
       saveThemeColor(hex);
+    }, (hex) => {
+      setThemeColor(hex);
     });
   });
 
   // ---- custom pixel color picker panel ----
-  let panelState = { h: 0, s: 0, l: 0, onPick: null, hueDrag: false, svDrag: false };
+  let panelState = { h: 0, s: 0, l: 0, onPick: null, onLive: null, originalHex: null, committed: false, hueDrag: false, svDrag: false };
 
   function drawSV() {
     const ctx = el.svCanvas.getContext("2d");
@@ -351,16 +355,21 @@
     const hex = hslToHex(panelState.h, panelState.s, panelState.l);
     el.preview.style.background = hex;
     el.pickerHex.value = hex.replace("#", "").toUpperCase();
+    if (panelState.onLive) panelState.onLive(hex);
   }
 
-  function openPanel(initialHex, onPick) {
-    const norm = normalizeHex(initialHex) || DEFAULT_THEME;
+  function openPanel(initialHex, onPick, onLive) {
+    const original = normalizeHex(initialHex);
+    const norm = original || DEFAULT_THEME;
     const { r, g, b } = hexToRgb(norm);
     const hsl = rgbToHsl(r, g, b);
     panelState.h = hsl.h;
     panelState.s = hsl.s;
     panelState.l = hsl.l;
     panelState.onPick = onPick;
+    panelState.onLive = onLive;
+    panelState.originalHex = original;
+    panelState.committed = false;
     drawSV();
     drawHue();
     panelRender();
@@ -371,8 +380,14 @@
   }
 
   function closePanel() {
+    if (!panelState.committed && panelState.originalHex && panelState.onLive) {
+      panelState.onLive(panelState.originalHex);
+    }
     el.panel.hidden = true;
     panelState.onPick = null;
+    panelState.onLive = null;
+    panelState.originalHex = null;
+    panelState.committed = false;
   }
 
   function svFromEvent(e) {
@@ -419,13 +434,14 @@
       const hsl = rgbToHsl(r, g, b);
       panelState.h = hsl.h; panelState.s = hsl.s; panelState.l = hsl.l;
       drawSV();
-      el.preview.style.background = norm;
+      panelRender();
     }
   });
 
   el.pickerOk.addEventListener("click", (e) => {
     e.stopPropagation();
     const norm = normalizeHex(el.pickerHex.value) || hslToHex(panelState.h, panelState.s, panelState.l);
+    panelState.committed = true;
     const cb = panelState.onPick;
     closePanel();
     if (cb) cb(norm);
