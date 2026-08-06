@@ -6,9 +6,11 @@ pixel font is rendered by the browser itself, avoiding the 16px PIL bitmap artif
 Outputs 1280x800 PNGs, one per language, with the picker panel open and a toast shown.
 """
 import base64
+import io
 import os
 from pathlib import Path
 
+from PIL import Image
 from playwright.sync_api import sync_playwright
 
 BASE = Path(__file__).resolve().parent.parent
@@ -16,6 +18,18 @@ ICON = BASE / "icons" / "icon48.png"
 MOCKUP = BASE / "scripts" / "screenshot-mockup.html"
 OUT_DIR = BASE / "store-assets" / "screenshots"
 W, H = 1280, 800
+
+
+def save_screenshot(page, out_path, width, height):
+    """Capture at 2x for crisp pixel fonts, then downscale to exact store size."""
+    raw = page.screenshot(clip={"x": 0, "y": 0, "width": width, "height": height})
+    im = Image.open(io.BytesIO(raw))
+    # Ensure RGB without alpha channel (Chrome Web Store rejects alpha PNGs).
+    if im.mode in ("RGBA", "P"):
+        im = im.convert("RGB")
+    im = im.resize((width // 2, height // 2), Image.Resampling.LANCZOS)
+    im.save(out_path, "PNG")
+    print(f"Saved: {out_path} ({im.size[0]}x{im.size[1]} {im.mode})")
 
 
 def main():
@@ -32,8 +46,7 @@ def main():
             page.evaluate(f"(l) => window.applyLang(l)", lang)
             out = OUT_DIR / folder / "screenshot1.png"
             out.parent.mkdir(parents=True, exist_ok=True)
-            page.screenshot(path=str(out), clip={"x": 0, "y": 0, "width": W, "height": H})
-            print(f"Saved: {out}")
+            save_screenshot(page, out, W * 2, H * 2)
 
         browser.close()
     print("Done.")
