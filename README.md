@@ -8,6 +8,24 @@
 
 <p align="center">A tiny, delightful color companion for designers, developers, and creators.</p>
 
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
+    <img src="https://img.shields.io/chrome-web-store/v/apijbbdegdaoflagofdfelollekcakdc?label=Chrome%20Web%20Store" alt="Chrome Web Store">
+  </a>
+  <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
+    <img src="https://img.shields.io/chrome-web-store/users/apijbbdegdaoflagofdfelollekcakdc?label=Users" alt="Users">
+  </a>
+  <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
+    <img src="https://img.shields.io/badge/license-Non--Commercial-blue" alt="License">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
+    <strong>▶ Install from Chrome Web Store</strong>
+  </a>
+</p>
+
 ## Features
 
 - Enter any HEX color and instantly preview it
@@ -30,7 +48,13 @@
 
 ## Install
 
-Load as an unpacked Chrome extension:
+Install directly from the Chrome Web Store:
+
+1. Open the [TinyPalette listing](https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN)
+2. Click **Add to Chrome**
+3. Confirm the permission prompt
+
+For local development / unpacked loading:
 
 1. Open `chrome://extensions`
 2. Enable **Developer mode**
@@ -40,6 +64,14 @@ Load as an unpacked Chrome extension:
 ## Usage
 
 Click the TinyPalette icon in the Chrome toolbar. Type a HEX value, use the color picker, or tap a recent/favorite swatch to preview and copy color codes.
+
+## Languages
+
+TinyPalette ships with **English** and **Simplified Chinese**. The interface follows your browser language automatically.
+
+## Links
+
+- Chrome Web Store: [tinypalette](https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN)
 
 ## License
 
