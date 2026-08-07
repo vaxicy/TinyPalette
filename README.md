@@ -13,9 +13,6 @@
     <img src="https://img.shields.io/chrome-web-store/v/apijbbdegdaoflagofdfelollekcakdc?label=Chrome%20Web%20Store" alt="Chrome Web Store">
   </a>
   <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
-    <img src="https://img.shields.io/chrome-web-store/users/apijbbdegdaoflagofdfelollekcakdc?label=Users" alt="Users">
-  </a>
-  <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
     <img src="https://img.shields.io/badge/license-Non--Commercial-blue" alt="License">
   </a>
 </p>
