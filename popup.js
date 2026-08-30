@@ -14,6 +14,7 @@
       enterHex: "ENTER HEX",
       copied: "Copied!",
       cssCopied: "CSS copied!",
+      applied: "Applied!",
       invalid: "Invalid HEX",
       copyHex: "Copy HEX",
       ok: "OK",
@@ -31,6 +32,7 @@
       enterHex: "ENTER HEX",
       copied: "已复制！",
       cssCopied: "已复制 CSS！",
+      applied: "已应用！",
       invalid: "无效 HEX",
       copyHex: "复制 HEX",
       ok: "确定",
@@ -93,6 +95,22 @@
     let h = raw.trim().replace(/^#/, "").toUpperCase();
     if (/^[0-9A-F]{3}$/.test(h)) {
       h = h.split("").map((c) => c + c).join("");
+    }
+    if (/^[0-9A-F]{6}$/.test(h)) return "#" + h;
+    return null;
+  }
+
+  // Loose parse for live preview: tolerates "#", lowercase, and pads a 5-char
+  // string with a trailing 0 so users typing "D2DAF" get "#D2DAF0" instead of
+  // a silent no-op. Returns null only for clearly invalid input.
+  function looseHex(raw) {
+    if (typeof raw !== "string") return null;
+    let h = raw.trim().replace(/^#/, "").toUpperCase();
+    if (!h) return null;
+    if (/^[0-9A-F]{3}$/.test(h)) {
+      h = h.split("").map((c) => c + c).join("");
+    } else if (/^[0-9A-F]{5}$/.test(h)) {
+      h = h + "0";
     }
     if (/^[0-9A-F]{6}$/.test(h)) return "#" + h;
     return null;
@@ -299,9 +317,41 @@
 
   // ---- events ----
   el.input.addEventListener("input", () => {
+    const norm = looseHex(el.input.value);
+    if (norm) {
+      el.input.classList.remove("invalid");
+      render(norm);
+    } else {
+      el.input.classList.add("invalid");
+    }
+  });
+
+  function applyHexFromInput() {
     const norm = normalizeHex(el.input.value);
     if (norm) {
+      el.input.classList.remove("invalid");
       render(norm);
+      showToast(t("applied"));
+    } else {
+      el.input.classList.add("invalid");
+      showToast(t("invalid"));
+    }
+  }
+
+  el.input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      applyHexFromInput();
+    }
+  });
+
+  el.input.addEventListener("blur", () => {
+    const norm = normalizeHex(el.input.value);
+    if (norm) {
+      el.input.classList.remove("invalid");
+      render(norm);
+    } else if (el.input.value.trim()) {
+      el.input.classList.add("invalid");
     }
   });
 
@@ -450,9 +500,8 @@
   }
 
   function closePanel() {
-    if (!panelState.committed && panelState.originalHex && panelState.onLive) {
-      panelState.onLive(panelState.originalHex);
-    }
+    // When closed without an explicit OK, keep the last live color the user
+    // was seeing (don't revert to the original). Only OK triggers a commit.
     el.panel.hidden = true;
     panelState.onPick = null;
     panelState.onLive = null;
@@ -498,13 +547,53 @@
   el.hueCanvas.addEventListener("pointerup", () => { panelState.hueDrag = false; });
 
   el.pickerHex.addEventListener("input", () => {
-    const norm = normalizeHex(el.pickerHex.value);
+    const norm = looseHex(el.pickerHex.value);
     if (norm) {
+      el.pickerHex.classList.remove("invalid");
       const { r, g, b } = hexToRgb(norm);
       const hsl = rgbToHsl(r, g, b);
       panelState.h = hsl.h; panelState.s = hsl.s; panelState.l = hsl.l;
       drawSV();
       panelRender();
+    } else {
+      el.pickerHex.classList.add("invalid");
+    }
+  });
+
+  function confirmPickerHex() {
+    const norm = normalizeHex(el.pickerHex.value);
+    if (norm) {
+      el.pickerHex.classList.remove("invalid");
+      const { r, g, b } = hexToRgb(norm);
+      const hsl = rgbToHsl(r, g, b);
+      panelState.h = hsl.h; panelState.s = hsl.s; panelState.l = hsl.l;
+      drawSV();
+      panelRender();
+      el.pickerOk.click();
+    } else {
+      el.pickerHex.classList.add("invalid");
+      showToast(t("invalid"));
+    }
+  }
+
+  el.pickerHex.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      confirmPickerHex();
+    }
+  });
+
+  el.pickerHex.addEventListener("blur", () => {
+    const norm = normalizeHex(el.pickerHex.value);
+    if (norm) {
+      el.pickerHex.classList.remove("invalid");
+      const { r, g, b } = hexToRgb(norm);
+      const hsl = rgbToHsl(r, g, b);
+      panelState.h = hsl.h; panelState.s = hsl.s; panelState.l = hsl.l;
+      drawSV();
+      panelRender();
+    } else if (el.pickerHex.value.trim()) {
+      el.pickerHex.classList.add("invalid");
     }
   });
 

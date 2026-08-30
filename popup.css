@@ -160,6 +160,18 @@ body {
   letter-spacing: 0.02em;
 }
 
+.hex-input.invalid {
+  border: 2px solid #D23B3B;
+  border-radius: 0;
+  animation: tp-shake 0.18s ease;
+}
+
+@keyframes tp-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
 .color-picker {
   -webkit-appearance: none;
   appearance: none;
@@ -356,6 +368,11 @@ body {
   padding: 3px 4px;
   border-radius: 0;
   line-height: 1.2;
+}
+
+.picker-hex.invalid {
+  border: 2px solid #D23B3B;
+  animation: tp-shake 0.18s ease;
 }
 
 .picker-ok {
