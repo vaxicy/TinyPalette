@@ -73,7 +73,8 @@ body {
   user-select: none;
 }
 
-.lang-toggle {
+.lang-toggle,
+.eye-dropper {
   -webkit-appearance: none;
   appearance: none;
   background: none;
@@ -82,15 +83,22 @@ body {
   margin: 0;
   font-family: var(--font);
   cursor: pointer;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, color 0.12s ease;
 }
 
+/* Unified hover/active feedback for the header decorative buttons:
+   the dropper and lang toggle spin out, the theme dot just scales. */
+.eye-dropper:hover,
 .lang-toggle:hover {
-  transform: scale(1.2) rotate(15deg);
+  color: var(--primary);
+  transform: scale(1.15);
+  opacity: 0.85;
 }
 
+.eye-dropper:active,
 .lang-toggle:active {
   transform: scale(0.95);
+  opacity: 1;
 }
 
 .brand-dot {
@@ -104,12 +112,19 @@ body {
   background: var(--primary);
   cursor: pointer;
   flex: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .brand-dot::-webkit-color-swatch-wrapper { padding: 0; }
 .brand-dot::-webkit-color-swatch { border: none; border-radius: 0; }
 .brand-dot::-moz-color-swatch { border: none; border-radius: 0; }
 .brand-dot:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px var(--primary-soft-2);
+  opacity: 0.85;
+}
+.brand-dot:active {
+  transform: scale(0.95);
+  opacity: 1;
 }
 
 .brand {
@@ -400,6 +415,7 @@ body {
   position: fixed;
   z-index: 9999;
   display: none;
+  max-width: 160px;
   padding: 3px 7px;
   background: var(--primary-dark);
   color: #FFFFFF;
@@ -407,7 +423,9 @@ body {
   font-size: 7px;
   letter-spacing: 0.04em;
   line-height: 1.4;
-  white-space: nowrap;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
   border-radius: 0;
   box-shadow: 2px 2px 0 rgba(90, 61, 77, 0.35);
   pointer-events: none;

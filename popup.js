@@ -19,7 +19,11 @@
       copyHex: "Copy HEX",
       ok: "OK",
       switchLang: "Switch to Chinese",
-      switchLangTip: "EN / ZH"
+      switchLangTip: "EN / ZH",
+      pickFromPage: "Pick from page",
+      changeTheme: "Change theme",
+      picked: "Picked!",
+      browserNoEyedropper: "Browser doesn't support page picker"
     },
     zh_CN: {
       brand: "TinyPalette",
@@ -37,7 +41,11 @@
       copyHex: "复制 HEX",
       ok: "确定",
       switchLang: "切换到英文",
-      switchLangTip: "ZH / EN"
+      switchLangTip: "ZH / EN",
+      pickFromPage: "页面吸色",
+      changeTheme: "更改主题",
+      picked: "已吸取！",
+      browserNoEyedropper: "浏览器不支持网页吸色"
     }
   };
 
@@ -64,7 +72,8 @@
     preview: document.getElementById("pickerPreview"),
     pickerHex: document.getElementById("pickerHex"),
     pickerOk: document.getElementById("pickerOk"),
-    langToggle: document.getElementById("langToggle")
+    langToggle: document.getElementById("langToggle"),
+    eyeDropper: document.getElementById("eyeDropper")
   };
 
   let currentHex = null;
@@ -80,6 +89,15 @@
     document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
       const key = node.getAttribute("data-i18n-placeholder");
       if (t[key]) node.placeholder = t[key];
+    });
+    document.querySelectorAll("[data-i18n-aria]").forEach((node) => {
+      const key = node.getAttribute("data-i18n-aria");
+      if (t[key]) node.setAttribute("aria-label", t[key]);
+    });
+    // Custom CSS tooltip text follows the current language via data-tooltip-key.
+    document.querySelectorAll("[data-tooltip-key]").forEach((node) => {
+      const key = node.getAttribute("data-tooltip-key");
+      if (t[key]) node.setAttribute("data-tooltip", t[key]);
     });
     document.documentElement.lang = lang === "zh_CN" ? "zh-CN" : "en";
     if (el.langToggle) {
@@ -401,6 +419,29 @@
   el.langToggle.addEventListener("click", (e) => {
     e.stopPropagation();
     switchLang();
+  });
+
+  // ---- page color picker (EyeDropper API) ----
+  async function pickFromPage() {
+    if (typeof window.EyeDropper === "undefined") {
+      showToast(t("browserNoEyedropper"));
+      return;
+    }
+    try {
+      const result = await new EyeDropper().open();
+      const hex = normalizeHex(result.sRGBHex);
+      if (hex) {
+        render(hex);
+        showToast(t("picked"));
+      }
+    } catch (err) {
+      // User cancelled (AbortError) or other — keep silent.
+    }
+  }
+
+  el.eyeDropper.addEventListener("click", (e) => {
+    e.stopPropagation();
+    pickFromPage();
   });
 
   // ---- custom tooltip ----

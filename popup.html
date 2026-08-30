@@ -9,13 +9,20 @@
   <main class="app">
     <!-- Pixel header -->
     <header class="header">
-      <span class="header-decor" aria-hidden="true">◆</span>
+      <button
+        id="eyeDropper"
+        class="header-decor eye-dropper"
+        type="button"
+        data-i18n-aria="pickFromPage"
+        aria-label="Pick a color from the page"
+        data-tooltip-key="pickFromPage"
+      >◆</button>
       <button
         id="themePicker"
         class="brand-dot"
         type="button"
         aria-label="Change UI theme color"
-        title="Change UI theme color"
+        data-tooltip-key="changeTheme"
       ></button>
       <h1 class="brand" data-i18n="brand">TinyPalette</h1>
       <button
