@@ -6,7 +6,7 @@
 
 <h1 align="center">TinyPalette</h1>
 
-<p align="center">A tiny, delightful color companion for designers, developers, and creators.</p>
+<p align="center">A tiny, delightful color companion with HEX preview, RGB/HSL conversion, page eyedropper, and a visual color picker.</p>
 
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/tinypalette/apijbbdegdaoflagofdfelollekcakdc?authuser=0&hl=zh-CN">
@@ -27,9 +27,12 @@
 
 - Enter any HEX color and instantly preview it
 - Convert HEX to RGB and HSL values
+- Built-in color picker: drag the hue/saturation/lightness panel to pick any shade
+- Page eyedropper: grab a color straight from the webpage you're viewing
 - One-click copy for HEX, RGB, HSL, or a ready-to-use CSS snippet
 - Recent colors history
 - Favorite palette with local storage persistence
+- Custom accent theme color: the whole popup tints to match your preference
 - Clean glassmorphism UI with soft pastel tones
 - Bilingual support: English and Simplified Chinese
 
@@ -60,7 +63,7 @@ For local development / unpacked loading:
 
 ## Usage
 
-Click the TinyPalette icon in the Chrome toolbar. Type a HEX value, use the color picker, or tap a recent/favorite swatch to preview and copy color codes.
+Click the TinyPalette icon in the Chrome toolbar. Type a HEX value, drag the color picker panel, use the page eyedropper to grab a color from any site, or tap a recent/favorite swatch to preview and copy color codes.
 
 ## Languages
 
