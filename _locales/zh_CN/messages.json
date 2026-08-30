@@ -8,7 +8,7 @@
     "description": "Short name"
   },
   "ext_description": {
-    "message": "小巧可爱的色彩小助手。预览 HEX、转换 RGB/HSL、一键复制色值。",
+    "message": "小巧可爱的色彩小助手，支持 HEX 预览、RGB/HSL 转换、页面吸色和可视化取色。",
     "description": "Store listing description"
   },
   "action_title": {
